@@ -4,6 +4,13 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
@@ -11,24 +18,34 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
-public class Example extends SubsystemBase {
+public class Pivot extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  public Example() {}
+  public Pivot() {}
 
-  private final VictorSPX example = new VictorSPX(8);
+  private final CANSparkMax pivotMotor = new CANSparkMax(13, MotorType.kBrushless); // might not be 13
 
-public Command Example() {
-    return run(() -> example.set(VictorSPXControlMode.PercentOutput, 1))
-    .withName("Example");
+  private final RelativeEncoder pivotEncoder = pivotMotor.getEncoder();
+  private final PIDController pivotController = new PIDController(3, 0.0, 0.03); // these pid need to be adjusted
+
+
+public Command pivotDown() {
+  return run(()->
+  pivotMotor.set(pivotController.calculate(pivotEncoder.getPosition(), -0.4)))//might not be -0.4
+  .withName("Pivot Down");
+  }
+
+  public Command pivotUp() {
+    return run(()->
+  pivotMotor.set(pivotController.calculate(pivotEncoder.getPosition(), 0.4)))//might not be 0.4
+  .withName("Pivot Up");
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Pivot Encoder", pivotEncoder.getPosition());
+    SmartDashboard.putNumber("PID Output SpeakerPOS", armController.calculate(armEncoder.getPosition(), -0.8));
   }
 
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
+
 }

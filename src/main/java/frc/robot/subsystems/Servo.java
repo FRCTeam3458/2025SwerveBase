@@ -4,22 +4,24 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
-public class CRollers extends SubsystemBase {
+public class Servo extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  public CRollers() {}
+  private final Servo servo;
 
-  private final VictorSPX CRollers = new VictorSPX(8);
-
-public Command runCRollers() {
-    return run(() -> CRollers.set(VictorSPXControlMode.PercentOutput, 1))
-    .withName("CRollers");
+public ServoSubsystem() {
+   servo = new Servo(1);
+    
+  }
+  public Command forwardServo() {
+    return Commands.runOnce(() -> servo.setAngle(180),this);
+  }
+  public Command backwardServo() {
+    return Commands.runOnce(() -> servo.setAngle(0),this);
   }
 
   @Override

@@ -4,22 +4,33 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
-public class Example extends SubsystemBase {
+public class Intake extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  public Example() {}
+  public Intake() {}
 
-  private final VictorSPX example = new VictorSPX(8);
+  private final CANSparkMax intakeMotor = new CANSparkMax(10, MotorType.kBrushless); // might not be 10
 
-public Command Example() {
-    return run(() -> example.set(VictorSPXControlMode.PercentOutput, 1))
-    .withName("Example");
+
+public Command runForwardIntake() {
+  if(intakeMotor.getOutputCurrent() < 45){ 
+    return run(() -> intakeMotor.set(CANSparkMax.PercentOutput, 1))
+    .withName("Intake");
+  } else {
+    return run(() -> intakeMotor.set(CANSparkMax.PercentOutput, 0))
+    .withName("Intake Stopped");
+  }
+  }
+
+  public Command runBackwardIntake() {
+    return run(() -> intakeMotor.set(CANSparkMax.PercentOutput, -1))
+    .withName("Reverse Intake");
   }
 
   @Override
@@ -27,8 +38,5 @@ public Command Example() {
     // This method will be called once per scheduler run
   }
 
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
+
 }

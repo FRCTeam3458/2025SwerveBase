@@ -23,6 +23,7 @@ import frc.robot.subsystems.Example;
 public class RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
+    private final Joystick operator = new Joystick(1);
 
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -33,9 +34,23 @@ public class RobotContainer {
 
     private final POVButton povUp = new POVButton(driver, 0);
 
+    private final JoystickButton intake = new JoystickButton(operator,1);
+    private final JoystickButton score = new JoystickButton(operator,2);
+
+    private final JoystickButton climbUp = new JoystickButton(operator,3);
+    private final JoystickButton climbDown = new JoystickButton(operator,6);
+    private final JoystickButton servoForward = new JoystickButton(operator,4);
+    private final JoystickButton servoBackward = new JoystickButton(operator,5);
+
     /* Subsystems */
     private final RevSwerve s_Swerve = new RevSwerve();
     private final Example s_Example = new Example();
+    private final Intake runForwardIntake = new Intake();
+    private final Intake runBackwardIntake = new Intake();
+    private final Climb climbUp = new Climb();
+    private final Climb climbDown = new Climb();
+    private final Servo servoForward = new Servo();
+    private final Servo servoBackward = new Servo();
 
     private final SendableChooser<Command> autoChooser = new SendableChooser<Command>();
   
@@ -51,6 +66,13 @@ public class RobotContainer {
             )
         ); 
 
+        intake.setDefaultCommand(runForwardIntake.Intake());
+        score.setDefaultCommand(runBackwardIntake.Intake());
+        climbUp.setDefaultCommand(climbUp.Climb());
+        climbDown.setDefaultCommand(climbDown.Climb());
+        servoBackward.setDefaultCommand(backwardServo.Servo());
+        servoForward.setDefaultCommand(forwardServo.Servo());
+      
         // Configure the button bindings
         configureButtonBindings();
 
@@ -67,6 +89,17 @@ public class RobotContainer {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         povUp.onTrue(new InstantCommand(()-> s_Example.Example()));
+
+
+        /* Operator Buttons */
+
+        intake.onTrue(runBackwardIntake.Intake());
+        score.whileTrue(runForwardIntake.Intake());
+        climbUp.whileTrue(climbUp.Climb());
+        climbDown.whileTrue(climbDown.Climb());
+        servoBackward.whileTrue(backwardServo.Servo());
+        servoForward.whileTrue(forwardServo.Servo());
+
     }
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
